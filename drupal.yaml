@@ -1,0 +1,31 @@
+services:
+  app:
+    image: drupal:latest
+    volumes:
+      - drupal-html:/var/www/html/
+    restart: always
+    depends_on:
+      - db
+    networks:
+      - default
+      - npm
+      
+  db:
+    image: postgres:latest
+    environment:
+      - POSTGRES_DB=drupal
+      - POSTGRES_USER=drupal
+      - POSTGRES_PASSWORD=XXXXX
+    restart: always
+    volumes:
+      - drupal-db:/var/lib/postgresql/data
+
+volumes:
+  drupal-html:
+    external: true
+  drupal-db:
+    external: true
+
+networks:
+  npm:
+    external: true

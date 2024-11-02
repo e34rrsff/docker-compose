@@ -1,0 +1,40 @@
+# Not an ideal config, will fix later
+services:
+  app:
+    image: 'jc21/nginx-proxy-manager:latest'
+    restart: unless-stopped
+    ports:
+      - '80:80'
+      - '443:443'
+      - '4081:81'
+    environment:
+      DB_MYSQL_HOST: "db"
+      DB_MYSQL_PORT: 3306
+      DB_MYSQL_USER: "npm"
+      DB_MYSQL_PASSWORD: "XXXXXX"
+      DB_MYSQL_NAME: "nginx_proxy_manager"
+    volumes:
+      - ./data:/data
+      - ./letsencrypt:/etc/letsencrypt
+    depends_on:
+      - db
+    networks:
+      - default
+      - npm
+  db:
+    image: 'jc21/mariadb-aria:latest'
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: "XXXXX"
+      MYSQL_DATABASE: 'nginx_proxy_manager'
+      MYSQL_USER: 'npm'
+      MYSQL_PASSWORD: 'npm'
+      MARIADB_AUTO_UPGRADE: '1'
+    volumes:
+      - ./mysql:/var/lib/mysql
+    networks:
+      - default
+
+networks:
+  npm:
+    external: true
