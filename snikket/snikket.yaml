@@ -1,0 +1,60 @@
+services:
+  proxy:
+    container_name: snikket-proxy
+    image: snikket/snikket-web-proxy:stable
+    env_file: stack.env
+    restart: "unless-stopped"
+    volumes:
+      - data:/snikket
+      - acme_challenges:/var/www/html/.well-known/acme-challenge
+    networks:
+      - default
+      - npm
+
+  certs:
+    container_name: snikket-certs
+    image: snikket/snikket-cert-manager:stable
+    env_file: stack.env
+    restart: "unless-stopped"
+    volumes:
+      - data:/snikket
+      - acme_challenges:/var/www/.well-known/acme-challenge
+    networks:
+      - default
+
+  portal:
+    container_name: snikket-portal
+    image: snikket/snikket-web-portal:stable
+    env_file: stack.env
+    restart: "unless-stopped"
+    networks:
+      - default
+
+  server:
+    container_name: snikket-server
+    image: snikket/snikket-server:stable
+    env_file: stack.env
+    restart: "unless-stopped"
+    volumes:
+      - data:/snikket
+    networks:
+      - default
+    ports:
+      - "5222:5222/tcp"
+      - "5269:5269/tcp"
+      - "5000:5000/tcp"
+      - "3478-3479:3478-3479"
+      - "5349-5350:5349-5350"
+      - "49152-49160:49152-49160/udp"
+
+volumes:
+  data:
+    name: snikket-data
+  acme_challenges:
+    name: snikket-acme_challenges
+
+networks:
+  default:
+    name: snikket-net
+  npm:
+    external: true

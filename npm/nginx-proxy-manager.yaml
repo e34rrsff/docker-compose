@@ -1,40 +1,49 @@
-# Not an ideal config, will fix later
 services:
   app:
+    container_name: npm-app
     image: 'jc21/nginx-proxy-manager:latest'
     restart: unless-stopped
     ports:
-      - '80:80'
-      - '443:443'
-      - '4081:81'
+      - '80:80' # Public HTTP Port
+      - '443:443' # Public HTTPS Port
+      - '4081:81' # Admin Webpage
     environment:
       DB_MYSQL_HOST: "db"
       DB_MYSQL_PORT: 3306
       DB_MYSQL_USER: "npm"
-      DB_MYSQL_PASSWORD: "XXXXXX"
+      DB_MYSQL_PASSWORD: "REDACTED"
       DB_MYSQL_NAME: "nginx_proxy_manager"
+      DISABLE_IPV6: true
     volumes:
-      - ./data:/data
-      - ./letsencrypt:/etc/letsencrypt
+      - app:/data
+      - app:/etc/letsencrypt
     depends_on:
       - db
     networks:
       - default
       - npm
+
   db:
+    container_name: npm-db
     image: 'jc21/mariadb-aria:latest'
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: "XXXXX"
+      MYSQL_ROOT_PASSWORD: 'REDACTED'
       MYSQL_DATABASE: 'nginx_proxy_manager'
       MYSQL_USER: 'npm'
-      MYSQL_PASSWORD: 'npm'
+      MYSQL_PASSWORD: 'REDACTED'
       MARIADB_AUTO_UPGRADE: '1'
     volumes:
-      - ./mysql:/var/lib/mysql
+      - db:/var/lib/mysql
     networks:
       - default
 
+volumes:
+  app:
+    name: npm-app
+  db:
+    name: npm-db
+    
 networks:
   npm:
     external: true

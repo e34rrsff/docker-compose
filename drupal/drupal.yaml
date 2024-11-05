@@ -15,7 +15,7 @@ services:
     environment:
       - POSTGRES_DB=drupal
       - POSTGRES_USER=drupal
-      - POSTGRES_PASSWORD=XXXXX
+      - POSTGRES_PASSWORD=REDACTED
     restart: always
     volumes:
       - drupal-db:/var/lib/postgresql/data
